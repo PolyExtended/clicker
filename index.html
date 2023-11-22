@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poly Clicker Game</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://i.imgur.com/kHOeihm.png"
+      id="favicon"
+    />
+    <meta
+      name="twitter:image"
+      content="https://i.imgur.com/kHOeihm.png"
+      id="twitter-image"
+    />
+    <!-- Materialize CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@0.5.2/dist/simple-notify.min.js"></script>
+    <link
+      href="https://polyextended.github.io/live/poly.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://polyextended.github.io/nav.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+  </head>
+  <body>
+    <header class="z-depth-1">
+      <nav class="z-depth-0 backer-dark">
+        <div class="nav-wrapper container">
+          <ul class="left">
+            <li><a href="https://polyextended.github.io/">Home</a></li>
+            <li><a href="https://polyextended.github.io/live/">PolyLive</a></li>
+            <li>
+              <a href="https://polyextended.github.io/streamlookup/"
+                >PolyLookup</a
+              >
+            </li>
+            <li>
+              <a href="https://polyextended.github.io/roleplay/"
+                >PolyRolePlay</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <script>
+      // Fetch the PolyExtended user's avatar from GitHub API
+      fetch("https://api.github.com/users/PolyExtended")
+        .then((response) => response.json())
+        .then((data) => {
+          // Extract the avatar URL from the API response
+          const avatarUrl = data.avatar_url;
+          const twitterImage = document.getElementById("twitter-image");
+          twitterImage.content = avatarUrl;
+          // Update the href attribute of the favicon link
+          const favicon = document.getElementById("favicon");
+          favicon.href = avatarUrl;
+        })
+        .catch((error) => {
+          console.error("Error fetching avatar:", error);
+        });
+    </script>
+    <div class="container">
+      <h1>Poly Clicker Game</h1>
+      <p>Click the button to increase your score:</p>
+      <button class="waves-effect waves-light btn" id="click-button">
+        Click Me
+      </button>
+      <p>Score: <span id="score">0</span></p>
+
+      <!-- Button to trigger data saving -->
+      <a class="waves-effect waves-light btn" id="save-button"
+        >Save Game Data</a
+      >
+    </div>
+
+    <!-- Materialize JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Notify Library -->
+    <script src="https://polyextended.github.io/Notify.js/Notify.js"></script>
+
+    <!-- Your custom JS file -->
+    <script>
+      // Declare gameData in the global scope and load data from local storage
+      let gameData = loadFromLocalStorage();
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Display initial score
+        updateScore();
+
+        // Click button event
+        document
+          .getElementById("click-button")
+          .addEventListener("click", function () {
+            // Increase score
+            gameData.player.score += 1;
+            // Update score display
+            updateScore();
+          });
+
+        // Save button event
+        document
+          .getElementById("save-button")
+          .addEventListener("click", function () {
+            // Save data to local storage
+            saveToLocalStorage(gameData);
+
+            // Show notification when the player saves game data
+            new Notify({
+              status: "success",
+              title: "PolyExtended - PolyClicker",
+              text: "Your game data has been saved successfully.",
+              effect: "slide",
+              speed: 300,
+              showIcon: false,
+              showCloseButton: false,
+              autoclose: true,
+              autotimeout: 3000,
+              gap: 20,
+              distance: 20,
+              type: 1, // You mentioned using type 1 here
+              position: "right top",
+            }).show();
+          });
+      });
+
+      // Function to load data from local storage
+      function loadFromLocalStorage() {
+        // Attempt to retrieve game data from local storage
+        const storedData = localStorage.getItem("gameData");
+
+        // If data exists, parse and return it; otherwise, use default data
+        return storedData ? JSON.parse(storedData) : getDefaultGameData();
+      }
+
+      // Function to save data to local storage
+      function saveToLocalStorage(data) {
+        // Convert data to JSON format and store in local storage
+        localStorage.setItem("gameData", JSON.stringify(data));
+      }
+
+      // Function to provide default game data
+      function getDefaultGameData() {
+        // For simplicity, we'll use a hardcoded default JSON data
+        return {
+          player: {
+            name: "Guest",
+            score: 0,
+          },
+        };
+      }
+
+      // Function to update the score display
+      function updateScore() {
+        const scoreElement = document.getElementById("score");
+        scoreElement.textContent = gameData.player.score;
+      }
+    </script>
+  </body>
+</html>
